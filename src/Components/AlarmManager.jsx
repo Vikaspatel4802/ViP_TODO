@@ -9,6 +9,9 @@ export default function AlarmManager() {
   const { tasks } = useAppContext();
   const [ringingTask, setRingingTask] = useState(null);
   
+  // NEW: State to track tasks that have already rung/been stopped
+  const [processedTasks, setProcessedTasks] = useState([]); 
+  
   // Audio Ref to control playback
   const audioRef = useRef(new Audio(ALARM_SOUND_URL));
 
@@ -28,11 +31,13 @@ export default function AlarmManager() {
 
       tasks.forEach(task => {
         // Trigger if: Date Matches AND Time Matches AND Task is NOT completed AND Not already ringing
+        // FIX: Added check (!processedTasks.includes(task.id)) to ensure we don't ring a stopped task again
         if (
            task.dueDate === currentDate && 
            task.dueTime === currentTime && 
            task.status !== 'Completed' &&
-           !ringingTask 
+           !ringingTask &&
+           !processedTasks.includes(task.id) 
         ) {
            triggerAlarm(task);
         }
@@ -40,7 +45,7 @@ export default function AlarmManager() {
     }, 1000); 
 
     return () => clearInterval(interval);
-  }, [tasks, ringingTask]);
+  }, [tasks, ringingTask, processedTasks]); // Added processedTasks to dependencies
 
   const triggerAlarm = (task) => {
     setRingingTask(task);
@@ -61,6 +66,12 @@ export default function AlarmManager() {
   const stopAlarm = () => {
     audioRef.current.pause();
     audioRef.current.currentTime = 0; 
+    
+    // FIX: Add the current task ID to the processed list so it is ignored by the interval loop
+    if (ringingTask) {
+      setProcessedTasks(prev => [...prev, ringingTask.id]);
+    }
+    
     setRingingTask(null);
   };
 

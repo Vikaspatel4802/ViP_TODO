@@ -18,6 +18,9 @@ export default function TodoPage() {
   const [editForm, setEditForm] = useState({});
   const [viewDetailTask, setViewDetailTask] = useState(null);
 
+  // Common style for all inputs to ensure high contrast
+  const inputStyle = "w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all";
+
   // --- 1. HANDLE ADD NEW TASK ---
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -65,7 +68,6 @@ export default function TodoPage() {
 
   // --- 3. FILTER & SEARCH LOGIC ---
   const filteredTasks = tasks.filter(t => {
-      // Search Logic
       const matchesSearch = t.title.toLowerCase().includes(search.toLowerCase()) || 
                             t.tags.some(tag => tag.toLowerCase().includes(search.toLowerCase()));
       
@@ -124,28 +126,66 @@ export default function TodoPage() {
               </div>
               
               <form onSubmit={handleSubmit} className="space-y-5">
-                <input type="text" required placeholder="Task Title" className="input-field font-bold text-lg p-4" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
+                {/* FIX: Applied 'inputStyle' to all inputs for contrast */}
+                <input 
+                  type="text" 
+                  required 
+                  placeholder="Task Title" 
+                  className={`${inputStyle} p-4 text-lg font-bold`} 
+                  value={formData.title} 
+                  onChange={e => setFormData({...formData, title: e.target.value})} 
+                />
                 
                 <div className="grid grid-cols-2 gap-4">
-                   <select className="input-field cursor-pointer p-3" value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})}>
+                   <select 
+                     className={`${inputStyle} p-3 cursor-pointer`} 
+                     value={formData.priority} 
+                     onChange={e => setFormData({...formData, priority: e.target.value})}
+                   >
                       <option>High</option><option>Medium</option><option>Low</option>
                    </select>
-                   <select className="input-field cursor-pointer p-3" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
+                   <select 
+                     className={`${inputStyle} p-3 cursor-pointer`} 
+                     value={formData.category} 
+                     onChange={e => setFormData({...formData, category: e.target.value})}
+                   >
                       <option>Personal</option><option>Professional</option>
                    </select>
                 </div>
                 
-                <input type="text" placeholder="Tags (comma separated)" className="input-field p-3" value={formData.tags} onChange={e => setFormData({...formData, tags: e.target.value})} />
+                <input 
+                  type="text" 
+                  placeholder="Tags (comma separated)" 
+                  className={`${inputStyle} p-3`} 
+                  value={formData.tags} 
+                  onChange={e => setFormData({...formData, tags: e.target.value})} 
+                />
                 
                 <div className="grid grid-cols-2 gap-4">
-                   <input type="date" className="input-field cursor-pointer p-3" value={formData.dueDate} onChange={e => setFormData({...formData, dueDate: e.target.value})} />
-                   <input type="time" className="input-field cursor-pointer p-3" value={formData.dueTime} onChange={e => setFormData({...formData, dueTime: e.target.value})} />
+                   <input 
+                     type="date" 
+                     className={`${inputStyle} p-3 cursor-pointer`} 
+                     value={formData.dueDate} 
+                     onChange={e => setFormData({...formData, dueDate: e.target.value})} 
+                   />
+                   <input 
+                     type="time" 
+                     className={`${inputStyle} p-3 cursor-pointer`} 
+                     value={formData.dueTime} 
+                     onChange={e => setFormData({...formData, dueTime: e.target.value})} 
+                   />
                 </div>
 
-                <textarea placeholder="Detailed Description..." rows="4" className="input-field p-3" value={formData.details} onChange={e => setFormData({...formData, details: e.target.value})} ></textarea>
+                <textarea 
+                  placeholder="Detailed Description..." 
+                  rows="4" 
+                  className={`${inputStyle} p-3`} 
+                  value={formData.details} 
+                  onChange={e => setFormData({...formData, details: e.target.value})} 
+                ></textarea>
 
                 <div className="flex gap-3 pt-4">
-                   <button type="button" onClick={() => setIsFormOpen(false)} className="flex-1 py-4 rounded-xl font-bold bg-slate-100 text-slate-500 hover:bg-slate-200">Cancel</button>
+                   <button type="button" onClick={() => setIsFormOpen(false)} className="flex-1 py-4 rounded-xl font-bold bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600">Cancel</button>
                    <button type="submit" className="flex-[2] bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1">Save Task</button>
                 </div>
               </form>
@@ -185,7 +225,8 @@ export default function TodoPage() {
             <input 
               type="text" 
               placeholder="Search tasks..." 
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 dark:text-slate-200 transition-all"
+              // FIX: Explicit text colors for search bar
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white transition-all"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -212,18 +253,19 @@ export default function TodoPage() {
                      // --- EDIT MODE ---
                      <div className="space-y-4 animate-in fade-in bg-slate-50 dark:bg-slate-900 p-4 rounded-xl">
                         <label className="text-xs uppercase font-bold text-slate-400">Editing Title</label>
-                        <input type="text" className="input-field font-bold text-lg" value={editForm.title} onChange={e => setEditForm({...editForm, title: e.target.value})} />
+                        {/* FIX: Explicit style for edit inputs */}
+                        <input type="text" className={`${inputStyle} p-2 font-bold text-lg`} value={editForm.title} onChange={e => setEditForm({...editForm, title: e.target.value})} />
                         
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="text-xs uppercase font-bold text-slate-400">Priority</label>
-                                <select className="input-field" value={editForm.priority} onChange={e => setEditForm({...editForm, priority: e.target.value})}>
+                                <select className={`${inputStyle} p-2`} value={editForm.priority} onChange={e => setEditForm({...editForm, priority: e.target.value})}>
                                     <option>High</option><option>Medium</option><option>Low</option>
                                 </select>
                             </div>
                             <div>
                                 <label className="text-xs uppercase font-bold text-slate-400">Category</label>
-                                <select className="input-field" value={editForm.category} onChange={e => setEditForm({...editForm, category: e.target.value})}>
+                                <select className={`${inputStyle} p-2`} value={editForm.category} onChange={e => setEditForm({...editForm, category: e.target.value})}>
                                     <option>Personal</option><option>Professional</option>
                                 </select>
                             </div>
@@ -231,7 +273,7 @@ export default function TodoPage() {
 
                         <div>
                             <label className="text-xs uppercase font-bold text-slate-400">Tags (comma separated)</label>
-                            <input type="text" className="input-field" value={editForm.tags} onChange={e => setEditForm({...editForm, tags: e.target.value})} />
+                            <input type="text" className={`${inputStyle} p-2`} value={editForm.tags} onChange={e => setEditForm({...editForm, tags: e.target.value})} />
                         </div>
 
                         <div className="flex justify-end gap-3 pt-2">
@@ -299,7 +341,7 @@ export default function TodoPage() {
           })}
           
           {filteredTasks.length === 0 && (
-             <div className="text-center py-12 opacity-50">
+             <div className="text-center py-12 opacity-50 dark:text-slate-400">
                 <p className="text-xl font-bold">No tasks found here.</p>
                 <p>Try adding one or changing filters!</p>
              </div>
@@ -310,7 +352,7 @@ export default function TodoPage() {
       {viewDetailTask && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
            <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl max-w-lg w-full relative shadow-2xl border border-white/20 animate-in zoom-in-95 duration-200">
-              <button onClick={() => setViewDetailTask(null)} className="absolute top-4 right-4 p-2 bg-slate-100 dark:bg-slate-700 rounded-full hover:rotate-90 transition-transform"><X size={20}/></button>
+              <button onClick={() => setViewDetailTask(null)} className="absolute top-4 right-4 p-2 bg-slate-100 dark:bg-slate-700 rounded-full hover:rotate-90 transition-transform"><X size={20} className="text-slate-600 dark:text-white"/></button>
               <h2 className="text-2xl font-black mb-1 pr-8 text-slate-900 dark:text-white">{viewDetailTask.title}</h2>
               <div className="flex gap-2 mb-6">
                  <span className="text-xs font-bold uppercase bg-blue-100 text-blue-700 px-2 py-1 rounded">{viewDetailTask.category}</span>
